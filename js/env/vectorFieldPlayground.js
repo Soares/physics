@@ -22,7 +22,7 @@ const curl = (F, d=0.01) => (x, y, z) => {
   return new THREE.Vector3(dFz_dy - dFy_dz, dFx_dz - dFz_dx, dFy_dx - dFx_dy);
 };
 
-const Fdc = (F, d=0.1) => (x, y, z) => {
+const fieldDivCurl = (F, d=0.1) => (x, y, z) => {
   let result = null;
   if (z < 2) {
     result = F(x, y, z);
@@ -34,8 +34,10 @@ const Fdc = (F, d=0.1) => (x, y, z) => {
   return new THREE.Vector3(result.x, result.y, result.z);
 };
 
-const F = (x, y, z) => new THREE.Vector3(y*x/5, x*y/5, 0);
-// const W = new VectorField('#root', F, {zrange: range(1)}).animate();
-const W = new VectorField('#root', Fdc(F), {
+const RocketShip = (x, y, z) => new THREE.Vector3(y*x/5, x*y/5, 0);
+
+const HasNeatCurl = (x, y, z) => new THREE.Vector3(0, 0, -(y**2/2) -(x**2/2));
+
+const W = new VectorField('#root', fieldDivCurl(HasNeatCurl), {
   zrange: [0, 50, 100],
 }).animate();

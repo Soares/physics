@@ -8,6 +8,7 @@ class VectorField extends ThreeWorld {
     orthographic = false,
     bodyColor = 0x0000FF,
     headColor = 0xFF00FF,
+    tailColor = 0x000000,
     thickness = 3,
     noisy = false,
   } = {}) {
@@ -20,6 +21,7 @@ class VectorField extends ThreeWorld {
     this.orthographic = orthographic;
     this.bodyColor = bodyColor;
     this.headColor = headColor;
+    this.tailColor = tailColor;
     this.thickness = thickness;
     this.noisy = noisy;
   }
@@ -54,6 +56,7 @@ class VectorField extends ThreeWorld {
   populate () {
     const bodiesGeometry = new THREE.Geometry();
     const headsGeometry = new THREE.Geometry();
+    const tailsGeometry = new THREE.Geometry();
     for (let x of this.xrange) {
       for (let y of this.yrange) {
         for (let z of this.zrange) {
@@ -63,10 +66,10 @@ class VectorField extends ThreeWorld {
           }
           const start = xyz.clone().multiply(this.scale).add(this.origin);
           const change = this.F(xyz.x, xyz.y, xyz.z).clone().multiply(this.scale);
-          const bodyEnd = start.clone().add(change.clone().multiplyScalar(0.9));
           const end = start.clone().add(change);
-          bodiesGeometry.vertices.push(start, bodyEnd);
-          headsGeometry.vertices.push(bodyEnd, end);
+          tailsGeometry.vertices.push(start);
+          bodiesGeometry.vertices.push(start, end);
+          headsGeometry.vertices.push(end);
         }
       }
     }
@@ -76,18 +79,25 @@ class VectorField extends ThreeWorld {
       opacity: 0.5,
       transparent: true,
     });
-    const headMaterial = new THREE.LineBasicMaterial({
+    const headMaterial = new THREE.PointsMaterial({
       color: this.headColor,
-      linewidth: 4 * this.thickness,
-      linecap: 'round',
+      size: this.thickness,
+      opacity: 0.5,
+      transparent: true,
+    });
+    const tailMaterial = new THREE.PointsMaterial({
+      color: this.tailColor,
+      size: this.thickness / 4,
       opacity: 0.5,
       transparent: true,
     });
     this.bodies = new THREE.LineSegments(bodiesGeometry, bodyMaterial);
-    this.heads = new THREE.LineSegments(headsGeometry, headMaterial);
+    this.heads = new THREE.Points(headsGeometry, headMaterial);
+    this.tails = new THREE.Points(tailsGeometry, tailMaterial);
 
     this.scene.add(this.bodies);
     this.scene.add(this.heads);
+    this.scene.add(this.tails);
 
     // this.pointsGeometry = new THREE.Geometry();
     // for (let x = 0; x < this.granularity.x; x++) {
