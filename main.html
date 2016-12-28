@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Physics Simulator</title>
+    <link rel="stylesheet" href="css/main.css">
+  </head>
+  <body>
+
+    <div class="simulations onecol">
+      <div id="primary" class="sim">
+        <canvas id="primary-canvas" width=2000 height=1000></canvas>
+        <div class="readout">
+          <div class="item">
+            <label for="V-primary">Potential Energy</label>
+            <output id="V-primary" class="potential">0</output>
+          </div>
+          <div class="item">
+            <label for="T-primary">Kinetic Energy</label>
+            <output id="T-primary" class="kinetic">0</output>
+          </div>
+          <div class="item">
+            <label for="E-primary">Total Energy</label>
+            <output id="E-primary" class="energy">0</output>
+          </div>
+          <div class="item">
+            <label for="elapsed-primary">In-world time</label>
+            <output id="elapsed-primary" class="elapsed">0</output>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div id="secondary" class="sim"> -->
+      <!--   <canvas id="secondary-canvas" width=2000 height=1000></canvas> -->
+      <!--   <div class="readout"> -->
+      <!--     <div class="item"> -->
+      <!--       <label for="V-secondary">Potential Energy</label> -->
+      <!--       <output id="V-secondary" class="potential">0</output> -->
+      <!--     </div> -->
+      <!--     <div class="item"> -->
+      <!--       <label for="T-secondary">Kinetic Energy</label> -->
+      <!--       <output id="T-secondary" class="kinetic">0</output> -->
+      <!--     </div> -->
+      <!--     <div class="item"> -->
+      <!--       <label for="E-secondary">Total Energy</label> -->
+      <!--       <output id="E-secondary" class="energy">0</output> -->
+      <!--     </div> -->
+      <!--     <div class="item"> -->
+      <!--       <label for="elapsed-secondary">In-world time</label> -->
+      <!--       <output id="elapsed-secondary" class="elapsed">0</output> -->
+      <!--     </div> -->
+      <!--   </div> -->
+      <!-- </div> -->
+
+      <!-- <div id="tertiary" class="sim"> -->
+      <!--   <canvas id="tertiary-canvas" width=2000 height=1000></canvas> -->
+      <!--   <div class="readout"> -->
+      <!--     <div class="item"> -->
+      <!--       <label for="V-tertiary">Potential Energy</label> -->
+      <!--       <output id="V-tertiary" class="potential">0</output> -->
+      <!--     </div> -->
+      <!--     <div class="item"> -->
+      <!--       <label for="T-tertiary">Kinetic Energy</label> -->
+      <!--       <output id="T-tertiary" class="kinetic">0</output> -->
+      <!--     </div> -->
+      <!--     <div class="item"> -->
+      <!--       <label for="E-tertiary">Total Energy</label> -->
+      <!--       <output id="E-tertiary" class="energy">0</output> -->
+      <!--     </div> -->
+      <!--     <div class="item"> -->
+      <!--       <label for="elapsed-tertiary">In-world time</label> -->
+      <!--       <output id="elapsed-tertiary" class="elapsed">0</output> -->
+      <!--     </div> -->
+      <!--   </div> -->
+      <!-- </div> -->
+
+      <!-- <div id="fourth" class="sim"> -->
+      <!--   <canvas id="fourth-canvas" width=2000 height=1000></canvas> -->
+      <!--   <div class="readout"> -->
+      <!--     <div class="item"> -->
+      <!--       <label for="V-fourth">Potential Energy</label> -->
+      <!--       <output id="V-fourth" class="potential">0</output> -->
+      <!--     </div> -->
+      <!--     <div class="item"> -->
+      <!--       <label for="T-fourth">Kinetic Energy</label> -->
+      <!--       <output id="T-fourth" class="kinetic">0</output> -->
+      <!--     </div> -->
+      <!--     <div class="item"> -->
+      <!--       <label for="E-fourth">Total Energy</label> -->
+      <!--       <output id="E-fourth" class="energy">0</output> -->
+      <!--     </div> -->
+      <!--     <div class="item"> -->
+      <!--       <label for="elapsed-fourth">In-world time</label> -->
+      <!--       <output id="elapsed-fourth" class="elapsed">0</output> -->
+      <!--     </div> -->
+      <!--   </div> -->
+      <!-- </div> -->
+    </div>
+
+    <div class="controls" id="controls">
+      <div class="item">
+        <label for="speed-manual">Speed</label>
+        <input class="speed-manual" type="number" id="speed-manual">
+        <input class="speed-slider" type="range" min="0" max="10" step="0.1">
+      </div>
+      <div class="item">
+        <button id="pause" class="pause" type="button">Pause</button>
+        <button id="unpause" class="unpause" type="button">Resume</button>
+      </div>
+      <div class="item">
+        <label for="fidelity-manual">Fidelity</label>
+        <input class="fidelity-manual" type="number" id="fidelity-manual">
+        <input class="fidelity-slider" type="range" min="1" max="10000" step="1">
+      </div>
+      <div class="item">
+        <label for="zoom-manual">Zoom</label>
+        <input class="zoom-manual" type="number" id="zoom-manual">
+        <input class="zoom-slider" type="range" min="0.1" max="100" step="0.1">
+      </div>
+      <!-- <div class="item"> -->
+      <!--   <label for="angle-manual">Angle</label> -->
+      <!--   <input class="angle-manual" type="number" id="angle-manual"> -->
+      <!--   <input class="angle-slider" type="range" min="0" max="6.3" step="0.1"> -->
+      <!-- </div> -->
+    </div>
+
+
+    <script src="js/lib/util.js"></script>
+
+    <script src="js/lib/coordinate.js"></script>
+    <script src="js/lib/vector.js"></script>
+    <script src="js/lib/transform.js"></script>
+    <script src="js/lib/polar.js"></script>
+
+    <script src="js/lib/timer.js"></script>
+    <script src="js/lib/bounds.js"></script>
+    <script src="js/lib/shapes.js"></script>
+    <script src="js/lib/oscillator.js"></script>
+
+    <script src="js/lib/backgroundObjects.js"></script>
+    <script src="js/lib/viewport.js"></script>
+    <script src="js/lib/readout.js"></script>
+    <script src="js/lib/controls.js"></script>
+    <script src="js/lib/executor.js"></script>
+
+    <script src="js/lib/particle.js"></script>
+    <script src="js/lib/trajectory.js"></script>
+    <script src="js/lib/potential.js"></script>
+
+    <script src="js/lib/classicalWorld.js"></script>
+    <script src="js/lib/simWorld.js"></script>
+
+    <!-- <script src="js/env/accuracyTest.js"></script> -->
+    <!-- <script src="js/env/boostTest.js"></script> -->
+    <!-- <script src="js/env/differentPotentials.js"></script> -->
+    <!-- <script src="js/env/movingOrigin.js"></script> -->
+    <!-- <script src="js/env/playground.js"></script> -->
+    <!-- <script src="js/env/pendulum.js"></script> -->
+    <!-- <script src="js/env/polarTest.js"></script> -->
+    <!-- <script src="js/env/rotatingFrame.js"></script> -->
+    <script src="js/env/hamiltonians.js"></script>
+  </body>
+</html>

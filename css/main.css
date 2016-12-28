@@ -1,0 +1,116 @@
+body {
+  background: #999999;
+  margin: 0;
+}
+
+.simulations {
+  display: grid;
+  align-items: stretch;
+  grid-gap: 5px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+}
+.simulations.onecol {
+  grid-template-columns: 1fr;
+}
+.simulations.twocol {
+  grid-template-columns: 1fr 1fr;
+}
+.simulations.threecol {
+  grid-template-columns: 1fr 1fr;
+}
+
+.sim {
+  border: none;
+  border-right: 1px solid black;
+  border-left: 1px solid black;
+  position: relative;
+  height: 100%;
+}
+.sim:nth-child(odd) {
+  border-left: none;
+}
+.sim:nth-child(even) {
+  border-right: none;
+}
+
+.sim canvas, .scene {
+  background: white;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  cursor: -webkit-grab;
+}
+.sim canvas:active, .scene:active {
+  cursor: -webkit-grabbing;
+}
+
+.readout, .controls {
+  display: flex;
+  flex-direction: row;
+  padding: 0.5em; 1em 1em 1em;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid black;
+}
+.readout {
+  position: absolute;
+  bottom: 1em;
+  right: 1em;
+}
+.controls {
+  position: fixed;
+  top: 1em;
+  left: -webkit-calc(50% - 210px);
+  margin: 0 auto;
+}
+
+.item {
+  margin-left: 1em;
+}
+.item:first-child {
+  margin-left: 0;
+}
+
+.item label:after {
+  content: ': ';
+}
+
+.item output {
+  display: block;
+  border: 1px solid black;
+  text-align: center;
+  padding: 0.2em 1em;
+  min-width: 5em;
+}
+
+.item input[type=range] {
+  display: block;
+}
+
+.item input[type=number] {
+  border: 1px solid black;
+  text-align: center;
+  padding: 0.2em 1em;
+  max-width: 5em;
+  margin: 0 auto;
+  background: transparent;
+}
+
+.item button {
+  display: block;
+  margin: 0 auto;
+}
+
+.controls.paused button.pause {
+  display: none;
+}
+.controls:not(.paused) button.unpause {
+  display: none;
+}
