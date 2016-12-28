@@ -1,6 +1,6 @@
-class ParticleWorld extends ThreeWorld {
-  initialize () {
-    this.center = new THREE.Vector3(0, 0, 0);
+class FlowingParticles extends WorldItem {
+  constructor () {
+    super();
     this.radius = new THREE.Vector3(50, 50, 50);
     this.maxTime = 12;
     this.timeScale = 1;
@@ -8,23 +8,7 @@ class ParticleWorld extends ThreeWorld {
     this.granularity = new THREE.Vector3(100, 100, 12);
   }
 
-  makeCamera () {
-    const camera = super.makeCamera();
-    camera.position.x = this.center.x;
-    camera.position.y = this.center.y;
-    camera.position.z = this.center.z - 2 * this.radius.z;
-    return camera;
-  }
-
-  makeControls () {
-    const controls = super.makeControls();
-    controls.target.x = this.center.x;
-    controls.target.y = this.center.y;
-    controls.target.z = this.center.z;
-    return controls;
-  }
-
-  populate () {
+  populate (world) {
     this.pointsGeometry = new THREE.Geometry();
     this.trajectories = [];
     for (let q = 0; q < this.granularity.x; q++) {
@@ -52,7 +36,7 @@ class ParticleWorld extends ThreeWorld {
       transparent: true,
     });
     this.points = new THREE.Points(this.pointsGeometry, this.pointsMaterial);
-    this.scene.add(this.points);
+    world.scene.add(this.points);
   }
 
   update (timer) {
@@ -83,4 +67,5 @@ class ParticleWorld extends ThreeWorld {
   }
 }
 
-const W = new ParticleWorld('#root').animate();
+const flowers = new FlowingParticles();
+new ThreeWorld('#root', {}, flowers).animate();

@@ -22,22 +22,15 @@ const curl = (F, d=0.01) => (x, y, z) => {
   return new THREE.Vector3(dFz_dy - dFy_dz, dFx_dz - dFz_dx, dFy_dx - dFx_dy);
 };
 
-const fieldDivCurl = (F, d=0.1) => (x, y, z) => {
-  let result = null;
-  if (z < 2) {
-    result = F(x, y, z);
-  } else if (z < 52) {
-    result = new THREE.Vector3(0, 0, div(F, d)(x, y, z));
-  } else if (z < 102) {
-    result = curl(F, d)(x, y, z);
-  }
-  return new THREE.Vector3(result.x, result.y, result.z);
-};
+const scaleF = (F, s) => (x, y, z) => F(x, y, z).multiplyScalar(s);
 
-const RocketShip = (x, y, z) => new THREE.Vector3(y*x/5, x*y/5, 0);
+const rocketShip = (x, y, z) => new THREE.Vector3(y*x/5, x*y/5, 0);
+const hasNeatCurl = (x, y, z) => new THREE.Vector3(0, 0, -(y**2/2) -(x**2/2));
+const hasNeatGrad = (x, y, z) => y**2 - x**2;
 
-const HasNeatCurl = (x, y, z) => new THREE.Vector3(0, 0, -(y**2/2) -(x**2/2));
-
-const W = new VectorField('#root', fieldDivCurl(HasNeatCurl), {
-  zrange: [0, 50, 100],
-}).animate();
+new ThreeWorld('#root')
+  // .add(new ScalarFieldVisualizer(hasNeatGrad, {minmax: [0, 200], zrange: range(1), origin: new THREE.Vector3(0, 0, 0)}))
+  // .add(new VectorFieldVisualizer(scaleF(grad(hasNeatGrad), 1/10), {zrange: range(1), origin: new THREE.Vector3(0, 0, 100)}))
+  .add(new VectorFieldVisualizer(hasNeatCurl, {zrange: range(1), origin: new THREE.Vector3(0, 0, 0)}))
+  .add(new VectorFieldVisualizer(curl(hasNeatCurl), {zrange: range(1), origin: new THREE.Vector3(0, 0, 100)}))
+  .animate();

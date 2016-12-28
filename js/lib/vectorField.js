@@ -1,24 +1,23 @@
-class VectorField extends ThreeWorld {
-  initialize (F, {
+class VectorFieldVisualizer extends WorldItem {
+  constructor (F, {
     origin = new THREE.Vector3(50, 50, 50),
     scale = new THREE.Vector3(10, 10, 10),
     xrange = range(20, -10, 1),
     yrange = range(20, -10, 1),
     zrange = range(20, -10, 1),
-    orthographic = false,
     bodyColor = 0x0000FF,
     headColor = 0xFF00FF,
     tailColor = 0x000000,
     thickness = 3,
     noisy = false,
   } = {}) {
+    super();
     this.F = F;
     this.origin = origin;
     this.scale = scale;
     this.xrange = xrange;
     this.yrange = yrange;
     this.zrange = zrange;
-    this.orthographic = orthographic;
     this.bodyColor = bodyColor;
     this.headColor = headColor;
     this.tailColor = tailColor;
@@ -26,34 +25,7 @@ class VectorField extends ThreeWorld {
     this.noisy = noisy;
   }
 
-  makeCamera (width, height) {
-    if (this.orthographic) {
-      const camera = new THREE.OrthographicCamera(
-          width / - 2,
-          width / 2,
-          height / 2,
-          height / - 2,
-          1, 10000);
-      camera.zoom = 4;
-      return camera;
-    } else {
-      const camera = super.makeCamera();
-      camera.position.x = this.origin.x;
-      camera.position.y = this.origin.y;
-      camera.position.z = this.origin.z + 50;
-      return camera;
-    }
-  }
-
-  makeControls () {
-    const controls = super.makeControls();
-    controls.target.x = this.origin.x;
-    controls.target.y = this.origin.y;
-    controls.target.z = this.origin.z;
-    return controls;
-  }
-
-  populate () {
+  populate (world) {
     const bodiesGeometry = new THREE.Geometry();
     const headsGeometry = new THREE.Geometry();
     const tailsGeometry = new THREE.Geometry();
@@ -95,38 +67,75 @@ class VectorField extends ThreeWorld {
     this.heads = new THREE.Points(headsGeometry, headMaterial);
     this.tails = new THREE.Points(tailsGeometry, tailMaterial);
 
-    this.scene.add(this.bodies);
-    this.scene.add(this.heads);
-    this.scene.add(this.tails);
-
-    // this.pointsGeometry = new THREE.Geometry();
-    // for (let x = 0; x < this.granularity.x; x++) {
-    //   for (let y = 0; y < this.granularity.y; y++) {
-    //     for (let z = 0; z < this.granularity.z; z++) {
-    //       const noise = this.noise();
-    //       const point = new THREE.Vector3(x + noise.x, y + noise.y, z + noise.z);
-    //       this.pointsGeometry.vertices.push(point);
-    //     }
-    //   }
-    // }
-    // this.pointsMaterial = new THREE.PointsMaterial({
-    //   color: 0x0000FF,
-    //   opacity: 0.7,
-    //   size: 0.5,
-    //   transparent: true,
-    // });
-    // this.points = new THREE.Points(this.pointsGeometry, this.pointsMaterial);
-    // this.scene.add(this.points);
+    world.scene.add(this.bodies);
+    world.scene.add(this.heads);
+    world.scene.add(this.tails);
   }
 
-  update (timer) {
-    // const dt = timer.total * this.timeScale;
-    // this.trajectories.forEach((j) => {
-    //   const t = (j.tCell + dt) % this.maxTime;
-    //   const [qt, vt] = this.phasePoint(j.qCell, j.vCell, t);
-    //   [j.point.x, j.point.y, j.point.z] = this.translate(qt, vt, t);
-    // });
-    // this.pointsGeometry.verticesNeedUpdate = true;
+  noise () {
+    return new THREE.Vector3(Math.random(), Math.random(), Math.random());
+  }
+}
+
+
+class ScalarFieldVisualizer extends WorldItem {
+  constructor (S, {
+    origin = new THREE.Vector3(50, 50, 50),
+    scale = new THREE.Vector3(10, 10, 10),
+    xrange = range(20, -10, 1),
+    yrange = range(20, -10, 1),
+    zrange = range(20, -10, 1),
+    minmax = [0, 100],
+    pointSize = 5,
+    noisy = false,
+  } = {}) {
+    super();
+    this.S = S;
+    this.origin = origin;
+    this.scale = scale;
+    this.xrange = xrange;
+    this.yrange = yrange;
+    this.zrange = zrange;
+    this.minmax = minmax;
+    this.pointSize = pointSize;
+    this.noisy = noisy;
+  }
+
+  heatColor (n, lightness = 50, {
+    hue = [270, 0],
+    saturation = [100, 100],
+    range = null,
+  } = {}) {
+    range = (range == null) ? this.minmax : range;
+    const p = ((n - range[0]) / (range[0] - range[1]));  // big = hot
+    const h = (p * (hue[1] - hue[0])) + hue[0];
+    const s = (p * (saturation[1] - saturation[0])) + saturation[0];
+    const l = lightness;
+    return new THREE.Color().setHSL(h / 360, s / 100, l / 100);
+  }
+
+  populate (world) {
+    this.geometry = new THREE.Geometry();
+    for (let x of this.xrange) {
+      for (let y of this.yrange) {
+        for (let z of this.zrange) {
+          const xyz = new THREE.Vector3(x, y, z);
+          if (this.noisy) {
+            xyz.add(this.noise());
+          }
+          this.geometry.colors.push(this.heatColor(this.S(xyz.x, xyz.y, xyz.z)));
+          this.geometry.vertices.push(xyz.multiply(this.scale).add(this.origin));
+        }
+      }
+    }
+    this.material = new THREE.PointsMaterial({
+      vertexColors: THREE.VertexColors,
+      size: this.pointSize,
+      opacity: 0.5,
+      transparent: true,
+    });
+    this.points = new THREE.Points(this.geometry, this.material);
+    world.scene.add(this.points);
   }
 
   noise () {

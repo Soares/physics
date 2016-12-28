@@ -1,7 +1,21 @@
+class WorldItem {
+  initialize (world) { }
+  populate () { }
+  update (timer) { }
+}
+
+
 class ThreeWorld {
-  constructor (elem, ...args) {
+  constructor (elem, {
+    origin = new THREE.Vector3(0, 0, 0),
+    originToViewpoint = new THREE.Vector3(0, 0, 100),
+    orthographic = false,
+  } = {}, ...items) {
+    this.origin = origin;
+    this.originToViewpoint = originToViewpoint;
+    this.orthographic = orthographic;
+
     this.container = typeof elem == typeof '' ? document.querySelector(elem) : elem;
-    this.initialize(...args);
     this.scene = this.makeScene();
     this.renderer = this.makeRenderer();
     this.camera = this.makeCamera(this.container.scrollWidth, this.container.scrollHeight);
@@ -18,19 +32,17 @@ class ThreeWorld {
     window.addEventListener('optimizedResize', onWindowResize, false);
     onWindowResize();
 
-    this.populate();
+    this.items = items;
+    for (let item of this.items) {
+      item.populate(this);
+    }
   }
 
-  // Use this to set any global variables you're going to need. This will be
-  // called before the make*() functions, so you can use the globals there.
-  // Will be given all the args past the first from the constructor.
-  initialize (...args) { }
-
-  // Use this to create the world objects and add them to the scene.
-  populate () { }
-
-  // Use this to update the world. The parameter is a timer object.
-  update (timer) { }
+  add (item) {
+    item.populate(this);
+    this.items.push(item);
+    return this;
+  }
 
   // Produce a properly initialized THREE scene.
   // The default one is vanilla.
@@ -51,8 +63,24 @@ class ThreeWorld {
   // The default one is a perspective camera with the appropriate axpect ratio
   // with near/far plates at 1 and 1000.
   makeCamera (width, height) {
-    const aspectRatio = width / height;
-    return new THREE.PerspectiveCamera(60, aspectRatio, 1, 10000);
+    let camera = null;
+    if (this.orthographic) {
+      camera = new THREE.OrthographicCamera(
+          width / - 2,
+          width / 2,
+          height / 2,
+          height / - 2,
+          1, 10000);
+      camera.zoom = 4;
+    } else {
+      const aspectRatio = width / height;
+      camera = new THREE.PerspectiveCamera(60, aspectRatio, 1, 10000);
+    }
+    const viewpoint = this.origin.clone().add(this.originToViewpoint);
+    camera.position.x = viewpoint.x;
+    camera.position.y = viewpoint.y;
+    camera.position.z = viewpoint.z;
+    return camera;
   }
 
   // Produce a properly initialized THREE controller.
@@ -85,7 +113,9 @@ class ThreeWorld {
 
       requestAnimationFrame(main);
       this.controls.update();
-      this.update(this.timer);
+      for (let item of this.items) {
+        item.update(this.timer);
+      }
       this.renderer.render(this.scene, this.camera);
     }
     requestAnimationFrame(main);

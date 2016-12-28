@@ -1,21 +1,18 @@
-class ParticleWorld extends ThreeWorld {
-  initialize ({
+class FlowingParticles extends WorldItem {
+  constructor ({
     timeScale = 10,
     timeCells = range(100, 0),
     timeTrackerCells = range(2, 0, 25),
     positionCells = range(25, -14),
     velocityCells = positionCells,
-    center = new THREE.Vector3(0, 0, 0),
     law = (q0, v0, t) => [q0 + t * v0, v0],
-    initialViewpoint = new THREE.Vector3(0, 0, -30),
   } = {}) {
+    super();
     this.timeScale = timeScale;
     this.timeCells = timeCells;
     this.timeTrackerCells = timeTrackerCells;
     this.positionCells = positionCells;
     this.velocityCells = velocityCells;
-    this.center = center;
-    this.initialViewpoint = initialViewpoint;
     this.law = law;
   }
 
@@ -28,23 +25,7 @@ class ParticleWorld extends ThreeWorld {
     ];
   }
 
-  makeCamera (width, height) {
-    const camera = super.makeCamera(width, height);
-    camera.position.x = this.initialViewpoint.x;
-    camera.position.y = this.initialViewpoint.y;
-    camera.position.z = this.initialViewpoint.z;
-    return camera;
-  }
-
-  makeControls () {
-    const controls = super.makeControls();
-    controls.target.x = this.center.x;
-    controls.target.y = this.center.y;
-    controls.target.z = this.center.z;
-    return controls;
-  }
-
-  populate () {
+  populate (world) {
     const lineMaterial = new THREE.LineBasicMaterial({
       vertexColors: THREE.VertexColors,
     });
@@ -75,7 +56,7 @@ class ParticleWorld extends ThreeWorld {
         }
         lineGeometry.vertices.push(start);
         lineGeometry.colors.push(color);
-        this.scene.add(new THREE.LineSegments(lineGeometry, lineMaterial));
+        world.scene.add(new THREE.LineSegments(lineGeometry, lineMaterial));
 
         // The travelling points
         for (let t0 of this.timeTrackerCells) {
@@ -91,8 +72,8 @@ class ParticleWorld extends ThreeWorld {
         }
       }
     }
-    this.scene.add(new THREE.Points(this.pointsGeometry, pointsMaterial));
-    this.scene.add(new THREE.AxisHelper(5));
+    world.scene.add(new THREE.Points(this.pointsGeometry, pointsMaterial));
+    world.scene.add(new THREE.AxisHelper(5));
   }
 
   update (timer) {
@@ -112,11 +93,13 @@ class ParticleWorld extends ThreeWorld {
   }
 }
 
-const W = new ParticleWorld('#root', {
+const flowers = new FlowingParticles({
   law: (q0, v0, t) => [q0 + v0 * t + 0.5 * t**2, v0 + t],
   positionCells: range(20, -10, 1/10),
   velocityCells: [-5, 0, 5],
   timeCells: range(100, -5, 1/8),
-  timeScale: 0,
+  timeScale: 1,
   timeTrackerCells: range(3),
-}).animate();
+});
+new ThreeWorld('#root', {}, flowers).animate();
+

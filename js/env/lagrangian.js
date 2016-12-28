@@ -1,5 +1,5 @@
-class LagrangianVisualizer extends ThreeWorld {
-  initialize ({
+class LagrangianVisualization extends WorldItem {
+  constructor ({
     L = (x, v, t) => v**2 - x,
     timeCells = null,
     positionCells = range(100, -50),
@@ -15,6 +15,7 @@ class LagrangianVisualizer extends ThreeWorld {
     curves = [],
     orthographic = false,
   } = {}) {
+    super();
     this.timeCells = timeCells;
     this.positionCells = positionCells;
     this.velocityCells = velocityCells;
@@ -38,7 +39,6 @@ class LagrangianVisualizer extends ThreeWorld {
     this.scale = scale;
     this.curves = curves;
     this.pointOpacity = pointOpacity;
-    this.orthographic = orthographic;
   }
 
   heatColor (n, lightness = 50, {
@@ -62,35 +62,12 @@ class LagrangianVisualizer extends ThreeWorld {
     return new THREE.Vector3(x * this.scale[0], v * this.scale[1], L * this.scale[2]);
   }
 
-  makeCamera (width, height) {
-    if (this.orthographic) {
-      const camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 1, 10000);
-      camera.zoom = 4;
-      return camera;
-    } else {
-      const camera = super.makeCamera(width, height);
-      camera.position.x = this.initialViewpoint.x;
-      camera.position.y = this.initialViewpoint.y;
-      camera.position.z = this.initialViewpoint.z;
-      return camera;
-    }
-  }
-
-  makeControls () {
-    const controls = super.makeControls();
-    controls.target.x = this.center.x;
-    controls.target.y = this.center.y;
-    controls.target.z = this.center.z;
-    controls.keyPanSpeed = 10;
-    return controls;
-  }
-
-  populate () {
+  populate (world) {
     const pointsMaterial = new THREE.PointsMaterial({
       vertexColors: THREE.VertexColors,
       size: this.dotSize,
     });
-    if (this.orthographic) {
+    if (world.orthographic) {
       pointsMaterial.sizeAttenuation = false;
     }
     if (this.pointOpacity == null) {
@@ -132,11 +109,11 @@ class LagrangianVisualizer extends ThreeWorld {
         }
       }
     }
-    this.scene.add(new THREE.Points(this.pointsGeometry, pointsMaterial));
-    this.scene.add(new THREE.AxisHelper(5));
+    world.scene.add(new THREE.Points(this.pointsGeometry, pointsMaterial));
+    world.scene.add(new THREE.AxisHelper(5));
     const translator = (x, v, t) => this.translateXVT(x, v, t);  // Silly js binding.
     for (let curve of this.curves) {
-      this.scene.add(curve.makeObject(this.timeCells, translator));
+      world.scene.add(curve.makeObject(this.timeCells, translator));
     }
   }
 }
@@ -209,12 +186,13 @@ const etadot = (t) => {
   return 0;
 }
 
-const LV = new LagrangianVisualizer('#root', {
+
+const L = new LagrangianVisualization({
   L: (x, v, t) => (0.1 * v**2) + (x),
   timeCells: range(10, 0, 2),
   positionCells: range(51, -25),
   velocityCells: range(51, -25),
-  // orthographic: true,
   xStart: -3,
   xEnd: 10,
-}).animate();
+});
+new ThreeWorld('#root', {orthographic: false}, L).animate();
