@@ -101,5 +101,5 @@ const flowers = new FlowingParticles({
   timeScale: 1,
   timeTrackerCells: range(3),
 });
-new ThreeWorld('#root', {}, flowers).animate();
+new ThreeWorld('#root', {}, flowers).run();
 

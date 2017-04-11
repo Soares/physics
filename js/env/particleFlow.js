@@ -68,4 +68,4 @@ class FlowingParticles extends WorldItem {
 }
 
 const flowers = new FlowingParticles();
-new ThreeWorld('#root', {}, flowers).animate();
+new ThreeWorld('#root', {}, flowers).run();

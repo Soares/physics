@@ -1,4 +1,5 @@
 const TAU = 2 * Math.PI;
+const RROOT2 = 1 / Math.sqrt(2);
 
 const NotImplemented = new Error('not implemented');
 
@@ -27,8 +28,14 @@ const sum = (xs, f = id, zero = 0) =>
 const product = (xs, f = id, one = 1) =>
   xs.reduce((total, x) => mul(total, f(x)), one);
 
-const range = (length, start=0, step = 1) =>
-  Array(length).fill().map((_, i) => (i + start) * step);
+// deprecated in favor of 'series' for consistency w/ python conventions.
+// (todo: refactor to (a) move everyone to 'series' and then (b) rename 'series' to 'range')
+const range = (length, start=0, step=1) => Array(length).fill().map((_, i) => (i + start) * step);
+const series = (start, stop=null, step=1) => {
+  return (stop == null) ?
+    series(0, stop, step) :
+    Array((stop - start) / step).fill().map((_, i) => (i * step) + start);
+}
 
 const min = (xs, f = id) => Math.min(...xs.map((x) => f(x)));
 const max = (xs, f = id) => Math.max(...xs.map((x) => f(x)));

@@ -195,4 +195,4 @@ const L = new LagrangianVisualization({
   xStart: -3,
   xEnd: 10,
 });
-new ThreeWorld('#root', {orthographic: false}, L).animate();
+new ThreeWorld('#root', {orthographic: false}, L).run();

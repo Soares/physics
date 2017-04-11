@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>1D wave function visualizer</title>
+    <link rel="stylesheet" href="css/main.css">
+	</head>
+	<body>
+    <div class="scene" id="root"></div>
+
+    <div class="controls" id="controls">
+      <div class="item">
+        <label for="speed-manual">Speed</label>
+        <input class="speed-manual" type="number" id="speed-manual">
+        <input class="speed-slider" type="range" min="0" max="10" step="0.1">
+      </div>
+      <div class="item">
+        <button id="pause" class="pause" type="button">Pause</button>
+        <button id="unpause" class="unpause" type="button">Resume</button>
+
+        <button id="tick" class="tick" type="button">Tick</button>
+      </div>
+      <div class="item">
+        <label for="fidelity-manual">Fidelity</label>
+        <input class="fidelity-manual" type="number" id="fidelity-manual">
+        <input class="fidelity-slider" type="range" min="1" max="10000" step="1">
+      </div>
+      <div class="item">
+        <button id="transform" class="transform" type="button">Transform</button>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r79/three.js"></script>
+    <script src="js/thirdParty/fft/lib/complex_array.js"></script>
+    <script src="js/thirdParty/fft/lib/fft.js"></script>
+    <script src="js/thirdParty/orbitControls.js"></script>
+
+    <script src="js/lib/util.js"></script>
+    <script src="js/lib/timer.js"></script>
+    <script src="js/lib/state.js"></script>
+    <script src="js/lib/threeWorld.js"></script>
+    <script src="js/lib/cvectorVisualizer.js"></script>
+
+    <!-- <script src="js/env/beautifulWaveInPlace.js"></script> -->
+    <script src="js/env/harmonicOscillatorWave.js"></script>
+	</body>
+</html>

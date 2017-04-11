@@ -33,4 +33,4 @@ new ThreeWorld('#root')
   // .add(new VectorFieldVisualizer(scaleF(grad(hasNeatGrad), 1/10), {zrange: range(1), origin: new THREE.Vector3(0, 0, 100)}))
   .add(new VectorFieldVisualizer(hasNeatCurl, {zrange: range(1), origin: new THREE.Vector3(0, 0, 0)}))
   .add(new VectorFieldVisualizer(curl(hasNeatCurl), {zrange: range(1), origin: new THREE.Vector3(0, 0, 100)}))
-  .animate();
+  .run();
