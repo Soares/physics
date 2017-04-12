@@ -20,7 +20,7 @@ class CVectorViz extends WorldItem {
     drawSurface=false,
     transformer=false,
     isProxy=false,
-  } = {}) {
+  } = {}, owner=null) {
     super();
     this.psi = psi;
     this.U = U;
@@ -32,6 +32,7 @@ class CVectorViz extends WorldItem {
     this.drawSurface = drawSurface;
     this.transformer = transformer;
     this.isProxy = isProxy;
+    this.owner = owner;
   }
 
   options (overrides={}) {
@@ -162,15 +163,26 @@ class CVectorViz extends WorldItem {
       this._markDirty();
     }
   }
+
+  addAltView (f, options={}) {
+    if (options.transformer == null) {
+      options.transformer = (psi) => f(master.clone());
+    }
+    options = this.options(options);
+    options.isProxy = true;
+    const master = this.psi;
+    const proxyU = (state) => state.imitate(f(master.clone()));
+    return this.owner.addWaveVisualization(f(master.clone()), proxyU, options);
+  }
 }
 
 
 class FVectorViz extends CVectorViz {
-  constructor (psi, U, options={}) {
+  constructor (psi, U, options={}, owner=null) {
     if (options.scale == undefined) { options.scale = [10, 10, 10]; }
     if (options.drawSurface == undefined) { options.drawSurface = true; }
     if (options.dotScale == undefined) { options.dotScale = 0.5; }
-    super(psi, U, options);
+    super(psi, U, options, owner);
   }
 
   pt (x, y, z) {

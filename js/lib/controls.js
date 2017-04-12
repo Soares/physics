@@ -2,9 +2,19 @@ class Controls {
   constructor(root, initialSpeed = 1, initialZoom = 1, initialFidelity = 1000) {
     this.root = (typeof root == typeof '') ? document.querySelector(root) : root;
 
-    // Apologies for the code duplication.
-    this.speedSlider = this.root.querySelector('input.speed-slider');
-    this.speedManual = this.root.querySelector('input.speed-manual');
+    if (this.root) {
+      this.speedSlider = this.root.querySelector('input.speed-slider');
+      this.speedManual = this.root.querySelector('input.speed-manual');
+      this.pauseButton = this.root.querySelector('button.pause');
+      this.unpauseButton = this.root.querySelector('button.unpause');
+      this.fidelitySlider = this.root.querySelector('input.fidelity-slider');
+      this.fidelityManual = this.root.querySelector('input.fidelity-manual');
+      this.zoomSlider = this.root.querySelector('input.zoom-slider');
+      this.zoomManual = this.root.querySelector('input.zoom-manual');
+      this.angleSlider = this.root.querySelector('input.angle-slider');
+      this.angleManual = this.root.querySelector('input.angle-manual');
+    }
+
     if (this.speedManual) {
       this.speedSlider.addEventListener('input', (event) => {
         this.speedManual.value = this.speedSlider.value;
@@ -18,20 +28,21 @@ class Controls {
       this.initialSpeed = initialSpeed;
     }
 
-    this.pauseButton = this.root.querySelector('button.pause');
-    this.pauseButton.addEventListener('click', (event) => {
-      this.root.classList.add('paused');
-      this._paused = true;
-    });
-    this.unpauseButton = this.root.querySelector('button.unpause');
-    this.unpauseButton.addEventListener('click', (event) => {
-      this.root.classList.remove('paused');
-      this._paused = false;
-      this.runners.forEach((r) => r.run());
-    });
+    if (this.pauseButton) {
+      this.pauseButton.addEventListener('click', (event) => {
+        this.root.classList.add('paused');
+        this._paused = true;
+      });
+    }
 
-    this.fidelitySlider = this.root.querySelector('input.fidelity-slider');
-    this.fidelityManual = this.root.querySelector('input.fidelity-manual');
+    if (this.unpauseButton) {
+      this.unpauseButton.addEventListener('click', (event) => {
+        this.root.classList.remove('paused');
+        this._paused = false;
+        this.runners.forEach((r) => r.run());
+      });
+    }
+
     if (this.fidelityManual) {
       this.fidelitySlider.addEventListener('input', (event) => {
         this.fidelityManual.value = this.fidelitySlider.value;
@@ -45,8 +56,6 @@ class Controls {
       this.initialFidelity = initialFidelity;
     }
 
-    this.zoomSlider = this.root.querySelector('input.zoom-slider');
-    this.zoomManual = this.root.querySelector('input.zoom-manual');
     if (this.zoomManual) {
       this.zoomSlider.addEventListener('input', (event) => {
         this.zoomManual.value = this.zoomSlider.value;
@@ -62,8 +71,6 @@ class Controls {
       this.initialZoom = initialZoom;
     }
 
-    this.angleSlider = this.root.querySelector('input.angle-slider');
-    this.angleManual = this.root.querySelector('input.angle-manual');
     if (this.angleManual) {
       this.angleSlider.addEventListener('input', (event) => {
         this.angleManual.value = this.angleSlider.value;
@@ -78,8 +85,8 @@ class Controls {
     }
 
     this.runners = [];
-    this.userTranslate = Vector2.zero;
     this._userTransform = null;
+    this.userTranslate = Vector2.zero;
   }
   
   addRunner (r) {
@@ -122,7 +129,6 @@ class Controls {
     }
     return missing;
   }
-
 
   get paused () { return this._paused; }
   get speed () {

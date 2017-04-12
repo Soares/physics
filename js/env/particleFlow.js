@@ -39,12 +39,13 @@ class FlowingParticles extends WorldItem {
     world.scene.add(this.points);
   }
 
-  update (timer) {
-    const dt = timer.total * this.timeScale;
+  update (dt, epsilon) {
+    dt *= this.timeScale;
     this.trajectories.forEach((j) => {
       const t = (j.tCell + dt) % this.maxTime;
       const [qt, vt] = this.phasePoint(j.qCell, j.vCell, t);
       [j.point.x, j.point.y, j.point.z] = this.translate(qt, vt, t);
+      j.tCell = t;
     });
     this.pointsGeometry.verticesNeedUpdate = true;
   }

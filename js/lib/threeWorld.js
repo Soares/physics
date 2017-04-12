@@ -6,89 +6,6 @@ class WorldItem {
 }
 
 
-// TODO: Refactor the 2D controls to reduce the code duplication.
-class Controls {
-  constructor(root='#controls', initialSpeed=1, initialFidelity = 1000) {
-    this.root = (typeof root == typeof '') ? document.querySelector(root) : root;
-    this.worlds = [];
-
-    // Apologies for the code duplication.
-    this.speedSlider = this.root.querySelector('input.speed-slider');
-    this.speedManual = this.root.querySelector('input.speed-manual');
-    if (this.speedManual) {
-      this.speedSlider.addEventListener('input', (event) => {
-        this.speedManual.value = this.speedSlider.value;
-      });
-      this.speedManual.addEventListener('input', (event) => {
-        this.speedSlider.value = this.speedManual.value;
-      });
-      this.speedManual.value = initialSpeed;
-      this.speedSlider.value = initialSpeed;
-    } else {
-      this.initialSpeed = initialSpeed;
-    }
-
-    this.pauseButton = this.root.querySelector('button.pause');
-    this.pauseButton.addEventListener('click', (event) => {
-      this.root.classList.add('paused');
-      this._paused = true;
-    });
-    this.unpauseButton = this.root.querySelector('button.unpause');
-    this.unpauseButton.addEventListener('click', (event) => {
-      this.root.classList.remove('paused');
-      this._paused = false;
-    });
-
-    this.tickButton = this.root.querySelector('button.tick');
-    this.tickButton.addEventListener('click', (event) => {
-      this.worlds.forEach((w) => w.tick());
-    });
-
-    this.transformButton = this.root.querySelector('button.transform');
-    this.transformButton.addEventListener('click', (event) => {
-      this.worlds.forEach((w) => w.transform());
-    });
-
-    this.fidelitySlider = this.root.querySelector('input.fidelity-slider');
-    this.fidelityManual = this.root.querySelector('input.fidelity-manual');
-    if (this.fidelityManual) {
-      this.fidelitySlider.addEventListener('input', (event) => {
-        this.fidelityManual.value = this.fidelitySlider.value;
-      });
-      this.fidelityManual.addEventListener('input', (event) => {
-        this.fidelitySlider.value = this.fidelityManual.value;
-      });
-      this.fidelityManual.value = initialFidelity;
-      this.fidelitySlider.value = initialFidelity;
-    } else {
-      this.initialFidelity = initialFidelity;
-    }
-  }
-
-  add (world) {
-    this.worlds.push(world);
-    return this;
-  }
-
-  _numberFromInput (input, missing, error = missing) {
-    if (input != null) {
-      const num = parseFloat(input.value);
-      return Number.isNaN(num) ? error : num;
-    }
-    return missing;
-  }
-
-  get paused () { return this._paused; }
-  get speed () {
-    return this._numberFromInput(this.speedManual, this.initialSpeed, 0);
-  }
-  get stepsPerSecond () {
-    return this._numberFromInput(this.fidelityManual, this.initialFidelity, 1);
-  }
-  get stepSize () { return 1 / this.stepsPerSecond; }
-};
-
-
 class ThreeWorld {
   constructor (elem, {
     origin = new THREE.Vector3(0, 0, 0),
@@ -107,7 +24,7 @@ class ThreeWorld {
     this.renderer = this.makeRenderer();
     this.camera = this.makeCamera(this.container.scrollWidth, this.container.scrollHeight);
     this.threeControls = this.makeControls();
-    this.htmlControls = new Controls(controlElem, speed, fidelity).add(this);
+    this.htmlControls = new Controls(controlElem, speed, fidelity);
     this.timer = null;
     this.paused = false;
 
@@ -228,4 +145,11 @@ class ThreeWorld {
     }
     window.requestAnimationFrame(mainLoop);
   }
+
+  addWaveVisualization (vector, universe, options={}) {
+    const cls = (vector instanceof FVector) ? FVectorViz : CVectorViz;
+    const visualizer = new cls(vector, universe, options, this);
+    this.add(visualizer);
+    return visualizer;
+  };
 }
