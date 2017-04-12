@@ -8,6 +8,7 @@ class FlowingParticles extends WorldItem {
     law = (q0, v0, t) => [q0 + t * v0, v0],
   } = {}) {
     super();
+    this._totalTime = 0;
     this.timeScale = timeScale;
     this.timeCells = timeCells;
     this.timeTrackerCells = timeTrackerCells;
@@ -76,9 +77,10 @@ class FlowingParticles extends WorldItem {
     world.scene.add(new THREE.AxisHelper(5));
   }
 
-  update (timer) {
+  update (dt, epsilon) {
     if (this.timeScale == 0) { return; }
-    const elapsedTime = timer.total * this.timeScale;
+    this._totalTime += dt * this.timeScale;
+    const elapsedTime = this._totalTime;
     const firstTime = this.timeCells[0];
     const lastTime = this.timeCells[this.timeCells.length - 1];
     const timeDirection = Math.sign(lastTime - firstTime);
