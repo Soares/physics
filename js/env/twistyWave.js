@@ -11,7 +11,7 @@ const wave = FVector.fromFunction(
 const universe = UfromH((vec) => vec.X()); // the wave spins faster the further we go from the origin
 
 // A simulation of a particle evolving under the hamiltonian H|ψ⟩ = xψ(x)
-// turns out it look /awesome/
+// turns out it looks /awesome/
 world.addWaveVisualization(wave, universe);
 // To add a fourier transform, capture the above line as a variable named e.g. `visualizer` and then do
 // visualizer.addAltView((psi) => psi.ft(), {origin: [0, -25, 25], drawSurface: false});
